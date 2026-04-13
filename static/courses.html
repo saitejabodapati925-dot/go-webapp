@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse curated DevOps learning paths with search, filters, saved courses, and project-focused syllabi.">
+    <title>Courses | StackPilot Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+</head>
+<body data-page="courses">
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="brand" href="/home">
+                <span class="brand-mark">SP</span>
+                <span class="brand-copy">
+                    <strong>StackPilot Academy</strong>
+                    <small>DevOps learning with momentum</small>
+                </span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-links" data-nav>
+                <a href="/home" data-nav-link="home">Home</a>
+                <a href="/courses" data-nav-link="courses">Courses</a>
+                <a href="/about" data-nav-link="about">About</a>
+                <a href="/contact" data-nav-link="contact">Contact</a>
+                <a class="button button-small" href="/contact">Talk to Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="hero hero-courses">
+            <div class="shell hero-grid">
+                <div class="reveal">
+                    <p class="eyebrow">Course catalog</p>
+                    <h1 class="display">Choose a track, filter by focus, and save what you want to build next.</h1>
+                    <p class="lead">
+                        These learning paths are designed around real workflows: testing, shipping, cloud infrastructure,
+                        reliability, and secure delivery. Use the controls below to find the right next step.
+                    </p>
+                </div>
+
+                <aside class="panel reveal">
+                    <p class="panel-label">Catalog snapshot</p>
+                    <div class="mini-board two-column">
+                        <div>
+                            <span>Tracks</span>
+                            <strong>8</strong>
+                        </div>
+                        <div>
+                            <span>Levels</span>
+                            <strong>3</strong>
+                        </div>
+                        <div>
+                            <span>Projects</span>
+                            <strong>6</strong>
+                        </div>
+                        <div>
+                            <span>Saved</span>
+                            <strong data-saved-count>0</strong>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="section-shell" id="catalog" data-course-dashboard>
+            <div class="shell">
+                <div class="section-heading reveal">
+                    <p class="eyebrow">Featured video lessons</p>
+                    <h2 class="section-title">Start with three practical videos that cover the foundations.</h2>
+                </div>
+
+                <div class="card-grid">
+                    <article class="card reveal">
+                        <span class="pill">Go</span>
+                        <h3>Go Basics</h3>
+                        <p>Learn Go syntax, core language concepts, and how to start building backend applications with confidence.</p>
+                        <a href="https://youtu.be/8uiZC0l4Ajw?si=zKBpGfhOCGU0UQkT" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Docker</span>
+                        <h3>Docker Fundamentals</h3>
+                        <p>Understand images, containers, Dockerfiles, and the basics of packaging applications for consistent delivery.</p>
+                        <a href="https://youtu.be/pTFZFxd4hOI?si=KGXUrB4N9Y82tdpO" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">CI/CD</span>
+                        <h3>GitHub Actions CI/CD</h3>
+                        <p>See how automated workflows can run tests, validate code, and support real deployment pipelines.</p>
+                        <a href="https://youtu.be/R8_veQiYBjI?si=dJpOQv-T0fq7qO9H" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+                    </article>
+                </div>
+
+                <div class="toolbar reveal">
+                    <label class="field">
+                        <span>Search courses</span>
+                        <input type="search" placeholder="Search by title, skill, or topic" data-course-search>
+                    </label>
+
+                    <label class="field">
+                        <span>Level</span>
+                        <select data-course-level>
+                            <option value="all">All levels</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="chip-row reveal" role="group" aria-label="Course topic filters">
+                    <button class="chip is-active" type="button" data-topic-filter="all">All</button>
+                    <button class="chip" type="button" data-topic-filter="cicd">CI/CD</button>
+                    <button class="chip" type="button" data-topic-filter="containers">Containers</button>
+                    <button class="chip" type="button" data-topic-filter="kubernetes">Kubernetes</button>
+                    <button class="chip" type="button" data-topic-filter="cloud">Cloud</button>
+                    <button class="chip" type="button" data-topic-filter="iac">IaC</button>
+                    <button class="chip" type="button" data-topic-filter="security">Security</button>
+                    <button class="chip" type="button" data-saved-toggle>Saved only</button>
+                </div>
+
+                <div class="results-bar reveal">
+                    <p data-course-results>Showing 8 courses</p>
+                    <button class="button button-secondary button-small" type="button" data-clear-filters>Clear filters</button>
+                </div>
+
+                <div class="course-grid">
+                    <article class="course-card reveal" data-course-card data-course-id="cicd-foundations" data-topic="cicd" data-level="beginner">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save CI/CD Foundations">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Beginner</span>
+                            <span>4 weeks</span>
+                        </div>
+                        <h3>CI/CD Foundations</h3>
+                        <p>Learn how code moves from commit to deployment with checks, tests, and release confidence.</p>
+                        <ul class="tag-list">
+                            <li>GitHub Actions</li>
+                            <li>Testing</li>
+                            <li>Release flow</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Build pipeline triggers, test stages, branch protections, artifact flow, and deployment gates.</p>
+                        </details>
+                        <a href="https://youtu.be/R8_veQiYBjI?si=dJpOQv-T0fq7qO9H" target="_blank" rel="noopener noreferrer">Watch the GitHub Actions video</a>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="docker-deployments" data-topic="containers" data-level="beginner">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save Docker Deployments">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Beginner</span>
+                            <span>3 weeks</span>
+                        </div>
+                        <h3>Docker Deployments</h3>
+                        <p>Understand images, layers, registries, and the decisions behind lean, secure container builds.</p>
+                        <ul class="tag-list">
+                            <li>Dockerfiles</li>
+                            <li>Image tags</li>
+                            <li>Runtime basics</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Create multi-stage builds, optimize container size, manage configuration, and publish images safely.</p>
+                        </details>
+                        <a href="https://youtu.be/pTFZFxd4hOI?si=KGXUrB4N9Y82tdpO" target="_blank" rel="noopener noreferrer">Watch the Docker video</a>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="kubernetes-workloads" data-topic="kubernetes" data-level="intermediate">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save Kubernetes Workloads">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Intermediate</span>
+                            <span>5 weeks</span>
+                        </div>
+                        <h3>Kubernetes Workloads</h3>
+                        <p>Deploy services, configure rollouts, and learn the workload patterns teams rely on every day.</p>
+                        <ul class="tag-list">
+                            <li>Deployments</li>
+                            <li>Services</li>
+                            <li>ConfigMaps</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Work with manifests, probes, scaling, rollout strategies, and cluster debugging fundamentals.</p>
+                        </details>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="terraform-environments" data-topic="iac" data-level="intermediate">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save Terraform Environments">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Intermediate</span>
+                            <span>4 weeks</span>
+                        </div>
+                        <h3>Terraform Environments</h3>
+                        <p>Model cloud infrastructure with reusable modules, sensible state management, and reviewable plans.</p>
+                        <ul class="tag-list">
+                            <li>Modules</li>
+                            <li>State</li>
+                            <li>Cloud resources</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Write composable Terraform, separate environments, review plans in CI, and avoid drift surprises.</p>
+                        </details>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="cloud-delivery" data-topic="cloud" data-level="intermediate">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save Cloud Delivery Systems">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Intermediate</span>
+                            <span>4 weeks</span>
+                        </div>
+                        <h3>Cloud Delivery Systems</h3>
+                        <p>Practice deploying services into cloud environments with guardrails around reliability and cost.</p>
+                        <ul class="tag-list">
+                            <li>Networking</li>
+                            <li>Load balancing</li>
+                            <li>Release strategy</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Cover environment design, app rollout choices, cloud primitives, and deployment troubleshooting.</p>
+                        </details>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="pipeline-security" data-topic="security" data-level="advanced">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save Pipeline Security">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Advanced</span>
+                            <span>3 weeks</span>
+                        </div>
+                        <h3>Pipeline Security</h3>
+                        <p>Bring security checks into the delivery flow without creating slow, frustrating gates.</p>
+                        <ul class="tag-list">
+                            <li>Trivy</li>
+                            <li>Secrets hygiene</li>
+                            <li>Policy checks</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Scan images, review dependencies, manage secrets safely, and design workable quality gates.</p>
+                        </details>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="observability-basics" data-topic="cloud" data-level="beginner">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save Observability Basics">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Beginner</span>
+                            <span>2 weeks</span>
+                        </div>
+                        <h3>Observability Basics</h3>
+                        <p>Learn how logs, metrics, and alerts help teams understand what their systems are actually doing.</p>
+                        <ul class="tag-list">
+                            <li>Logs</li>
+                            <li>Metrics</li>
+                            <li>Alerting</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Understand signals, dashboards, alert quality, and how to debug incidents with less guesswork.</p>
+                        </details>
+                        <a href="https://youtu.be/8uiZC0l4Ajw?si=zKBpGfhOCGU0UQkT" target="_blank" rel="noopener noreferrer">Watch the Go basics video</a>
+                    </article>
+
+                    <article class="course-card reveal" data-course-card data-course-id="gitops-release-flow" data-topic="cicd" data-level="advanced">
+                        <button class="bookmark" type="button" data-save-course aria-label="Save GitOps Release Flow">Save</button>
+                        <div class="course-meta">
+                            <span class="pill">Advanced</span>
+                            <span>5 weeks</span>
+                        </div>
+                        <h3>GitOps Release Flow</h3>
+                        <p>Design a declarative delivery model that keeps environments consistent and changes reviewable.</p>
+                        <ul class="tag-list">
+                            <li>GitOps</li>
+                            <li>Promotion flow</li>
+                            <li>Rollback plans</li>
+                        </ul>
+                        <details>
+                            <summary>Open syllabus</summary>
+                            <p>Learn repo structure, environment promotion, drift detection, and release management with confidence.</p>
+                        </details>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-shell alt-surface">
+            <div class="shell">
+                <div class="section-heading reveal">
+                    <p class="eyebrow">Suggested bundles</p>
+                    <h2 class="section-title">A few smart sequences if you want a curated start.</h2>
+                </div>
+
+                <div class="card-grid">
+                    <article class="card reveal">
+                        <span class="pill">Starter pack</span>
+                        <h3>CI/CD Foundations plus Docker Deployments</h3>
+                        <p>A great opening combo if you want to understand how code changes become shippable artifacts.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Platform pack</span>
+                        <h3>Kubernetes Workloads plus Terraform Environments</h3>
+                        <p>Strong next step for learners moving from app delivery into cloud-native platform thinking.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Confidence pack</span>
+                        <h3>Cloud Delivery Systems plus Pipeline Security</h3>
+                        <p>Ideal when you want to improve release readiness, guardrails, and deployment decision-making.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-grid">
+            <div>
+                <p class="footer-brand">StackPilot Academy</p>
+                <p class="footer-copy">Roadmaps, project sprints, and practical learning loops for DevOps growth.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/home">Home</a>
+                <a href="/courses">Courses</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <p class="footer-copy">Copyright <span data-current-year></span> StackPilot Academy</p>
+        </div>
+    </footer>
+</body>
+</html>

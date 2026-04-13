@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="StackPilot Academy helps learners master DevOps through guided roadmaps, practical projects, and build-ready feedback loops.">
+    <title>StackPilot Academy | Learn DevOps by Building</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+</head>
+<body data-page="home">
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="brand" href="/home">
+                <span class="brand-mark">SP</span>
+                <span class="brand-copy">
+                    <strong>StackPilot Academy</strong>
+                    <small>DevOps learning with momentum</small>
+                </span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-links" data-nav>
+                <a href="/home" data-nav-link="home">Home</a>
+                <a href="/courses" data-nav-link="courses">Courses</a>
+                <a href="/about" data-nav-link="about">About</a>
+                <a href="/contact" data-nav-link="contact">Contact</a>
+                <a class="button button-small" href="/courses#catalog">Explore Paths</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="hero hero-home">
+            <div class="shell hero-grid">
+                <div class="reveal">
+                    <p class="eyebrow">Hands-on cloud and platform engineering</p>
+                    <h1 class="display">Build real DevOps confidence with projects, roadmaps, and fast feedback.</h1>
+                    <p class="lead">
+                        StackPilot turns scattered tutorials into a guided learning experience. Pick a path,
+                        practice with a project sprint, and track your progress as you grow from fundamentals
+                        to production-ready workflows.
+                    </p>
+
+                    <div class="button-row">
+                        <a class="button" href="/courses#catalog">Start a Learning Path</a>
+                        <a class="button button-secondary" href="/about">See the Teaching Style</a>
+                    </div>
+
+                    <div class="stat-grid">
+                        <article class="stat-card">
+                            <strong data-count="12">12</strong>
+                            <span>Guided modules</span>
+                        </article>
+                        <article class="stat-card">
+                            <strong data-count="24">24</strong>
+                            <span>Lab checkpoints</span>
+                        </article>
+                        <article class="stat-card">
+                            <strong data-count="6">6</strong>
+                            <span>Project sprints</span>
+                        </article>
+                    </div>
+                </div>
+
+                <aside class="panel feature-panel reveal">
+                    <p class="panel-label">This week inside StackPilot</p>
+                    <h2>Current cohort focus</h2>
+                    <ul class="check-list">
+                        <li>Build your first CI workflow with tests and code checks</li>
+                        <li>Containerize a Go app and understand multi-stage Docker builds</li>
+                        <li>Practice security scanning with Trivy and quality gates with SonarQube</li>
+                    </ul>
+
+                    <div class="mini-board">
+                        <div>
+                            <span>Momentum</span>
+                            <strong>83%</strong>
+                        </div>
+                        <div>
+                            <span>Office Hours</span>
+                            <strong>Wed 7 PM</strong>
+                        </div>
+                        <div>
+                            <span>Next Sprint</span>
+                            <strong>Deploy to Cloud</strong>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="section-shell">
+            <div class="shell">
+                <div class="section-heading reveal">
+                    <p class="eyebrow">Why learners stay</p>
+                    <h2 class="section-title">Everything is organized around momentum, not overwhelm.</h2>
+                </div>
+
+                <div class="card-grid">
+                    <article class="card reveal">
+                        <span class="pill">Structured</span>
+                        <h3>Roadmaps that remove guesswork</h3>
+                        <p>Every path shows what to learn first, what to practice next, and what project proves the skill.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Practical</span>
+                        <h3>Project-based learning loops</h3>
+                        <p>Each module includes a build step, a validation step, and a reflection step so concepts actually stick.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Focused</span>
+                        <h3>Feedback at the right moment</h3>
+                        <p>Quick checklists, milestone prompts, and review-ready outputs make every sprint feel complete.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-shell alt-surface">
+            <div class="shell">
+                <div class="section-heading reveal">
+                    <p class="eyebrow">Featured paths</p>
+                    <h2 class="section-title">Start where your confidence is today.</h2>
+                </div>
+
+                <div class="path-grid">
+                    <article class="path-card reveal">
+                        <p class="path-label">Path 01</p>
+                        <h3>Foundations for beginners</h3>
+                        <p>Learn Git, Linux, CI basics, containers, and deployment thinking without jumping straight into complexity.</p>
+                        <a href="/courses#catalog">Browse beginner tracks</a>
+                    </article>
+                    <article class="path-card reveal">
+                        <p class="path-label">Path 02</p>
+                        <h3>Platform tooling for teams</h3>
+                        <p>Go deeper into Kubernetes workflows, IaC, observability, and security checks built into pipelines.</p>
+                        <a href="/courses#catalog">See intermediate tracks</a>
+                    </article>
+                    <article class="path-card reveal">
+                        <p class="path-label">Path 03</p>
+                        <h3>Ship a full-stack deployment flow</h3>
+                        <p>Combine testing, containers, scanning, and cloud rollout into a portfolio-worthy final sprint.</p>
+                        <a href="/courses#catalog">Open the full catalog</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-shell">
+            <div class="shell">
+                <div class="section-heading reveal">
+                    <p class="eyebrow">How it works</p>
+                    <h2 class="section-title">A learning loop designed for real project work.</h2>
+                </div>
+
+                <div class="timeline">
+                    <article class="timeline-step reveal">
+                        <span>1</span>
+                        <h3>Pick a track</h3>
+                        <p>Choose a focused path like CI/CD, Kubernetes, cloud delivery, or security-in-pipelines.</p>
+                    </article>
+                    <article class="timeline-step reveal">
+                        <span>2</span>
+                        <h3>Build through checkpoints</h3>
+                        <p>Use lightweight labs and milestone prompts to turn theory into working outcomes.</p>
+                    </article>
+                    <article class="timeline-step reveal">
+                        <span>3</span>
+                        <h3>Ship a final sprint</h3>
+                        <p>Wrap each path with a practical project that looks and feels like real team workflow.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-shell">
+            <div class="shell newsletter-banner reveal">
+                <div>
+                    <p class="eyebrow">Stay in the loop</p>
+                    <h2 class="section-title">Get the weekly build note.</h2>
+                    <p class="lead compact">A short digest with one practical lesson, one project idea, and one checkpoint to keep you moving.</p>
+                </div>
+
+                <form class="inline-form" data-demo-form="newsletter">
+                    <label class="sr-only" for="newsletter-email">Email address</label>
+                    <input id="newsletter-email" name="email" type="email" placeholder="Enter your email" required>
+                    <button class="button" type="submit">Subscribe</button>
+                    <p class="form-status" data-form-status aria-live="polite"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-grid">
+            <div>
+                <p class="footer-brand">StackPilot Academy</p>
+                <p class="footer-copy">A modern learning space for DevOps, cloud delivery, and platform engineering fundamentals.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/home">Home</a>
+                <a href="/courses">Courses</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <p class="footer-copy">Copyright <span data-current-year></span> StackPilot Academy</p>
+        </div>
+    </footer>
+</body>
+</html>

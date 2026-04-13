@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Reach out to StackPilot Academy for learner support, project questions, or team training conversations.">
+    <title>Contact | StackPilot Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+</head>
+<body data-page="contact">
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="brand" href="/home">
+                <span class="brand-mark">SP</span>
+                <span class="brand-copy">
+                    <strong>StackPilot Academy</strong>
+                    <small>DevOps learning with momentum</small>
+                </span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-links" data-nav>
+                <a href="/home" data-nav-link="home">Home</a>
+                <a href="/courses" data-nav-link="courses">Courses</a>
+                <a href="/about" data-nav-link="about">About</a>
+                <a href="/contact" data-nav-link="contact">Contact</a>
+                <a class="button button-small" href="/courses#catalog">Find a Track</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="hero hero-contact">
+            <div class="shell hero-grid">
+                <div class="reveal">
+                    <p class="eyebrow">Contact and support</p>
+                    <h1 class="display">Ask a question, plan a learning sprint, or share what you want to build next.</h1>
+                    <p class="lead">
+                        This demo page includes a fully interactive front-end form experience. It validates your inputs
+                        and is ready to connect to a backend when you want to add one.
+                    </p>
+                </div>
+
+                <aside class="panel reveal">
+                    <p class="panel-label">Response rhythm</p>
+                    <ul class="check-list">
+                        <li>Learner questions: same or next day</li>
+                        <li>Team inquiries: within two business days</li>
+                        <li>Project feedback: best when you include context and goals</li>
+                        <li>Email: <a href="mailto:saitejabodapati2@gmail.com">saitejabodapati2@gmail.com</a></li>
+                    </ul>
+                </aside>
+            </div>
+        </section>
+
+        <section class="section-shell">
+            <div class="shell contact-layout">
+                <div class="contact-cards">
+                    <article class="card reveal">
+                        <span class="pill">Learner support</span>
+                        <h3>Need help picking your next step?</h3>
+                        <p>Share your current experience level and the kind of project you want to build. You can also write directly to <a href="mailto:saitejabodapati2@gmail.com">saitejabodapati2@gmail.com</a>.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Team training</span>
+                        <h3>Planning an internal enablement track?</h3>
+                        <p>Use the form to describe your team size, stack, and the skills you want to strengthen.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Project reviews</span>
+                        <h3>Want feedback on a CI/CD or container workflow?</h3>
+                        <p>Include the bottleneck you are hitting and what “done” should look like for the project.</p>
+                    </article>
+                </div>
+
+                <form class="contact-form panel reveal" data-demo-form="contact">
+                    <div class="form-grid">
+                        <label class="field">
+                            <span>Name</span>
+                            <input type="text" name="name" placeholder="Your name" required>
+                        </label>
+
+                        <label class="field">
+                            <span>Email</span>
+                            <input type="email" name="email" placeholder="you@example.com" required>
+                        </label>
+
+                        <label class="field">
+                            <span>Topic</span>
+                            <select name="topic" required>
+                                <option value="">Select a topic</option>
+                                <option value="learning-path">Learning path guidance</option>
+                                <option value="team-training">Team training</option>
+                                <option value="project-review">Project review</option>
+                                <option value="general">General question</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span>Preferred response window</span>
+                            <select name="timeline" required>
+                                <option value="">Choose one</option>
+                                <option value="asap">As soon as possible</option>
+                                <option value="this-week">This week</option>
+                                <option value="this-month">This month</option>
+                            </select>
+                        </label>
+
+                        <label class="field field-full">
+                            <span>What are you trying to accomplish?</span>
+                            <textarea name="message" rows="6" placeholder="Tell us what you are building, where you feel blocked, and what outcome you want." required></textarea>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="button" type="submit">Send Message</button>
+                        <p class="form-note">Demo form for now. Hook this up to a backend endpoint when you are ready to store submissions.</p>
+                    </div>
+                    <p class="form-status" data-form-status aria-live="polite"></p>
+                </form>
+            </div>
+        </section>
+
+        <section class="section-shell alt-surface">
+            <div class="shell">
+                <div class="section-heading reveal">
+                    <p class="eyebrow">Office hours</p>
+                    <h2 class="section-title">A clear support rhythm helps learners keep moving.</h2>
+                </div>
+
+                <div class="card-grid">
+                    <article class="card reveal">
+                        <span class="pill">Monday</span>
+                        <h3>Roadmap planning</h3>
+                        <p>Best for choosing what to learn next, sequencing topics, and defining a realistic weekly goal.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Wednesday</span>
+                        <h3>Project troubleshooting</h3>
+                        <p>Ideal for pipeline issues, Docker questions, release blockers, and build/debug sessions.</p>
+                    </article>
+                    <article class="card reveal">
+                        <span class="pill">Friday</span>
+                        <h3>Review and reflection</h3>
+                        <p>A good checkpoint for sharing what shipped, what felt hard, and what the next sprint should target.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-grid">
+            <div>
+                <p class="footer-brand">StackPilot Academy</p>
+                <p class="footer-copy">A polished starter app for learning, teaching, and showcasing DevOps content.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/home">Home</a>
+                <a href="/courses">Courses</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <p class="footer-copy">Copyright <span data-current-year></span> StackPilot Academy</p>
+        </div>
+    </footer>
+</body>
+</html>
