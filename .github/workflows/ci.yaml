@@ -120,19 +120,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Install Trivy
-        run: |
-          curl --proto '=https' --tlsv1.2 --fail --show-error --silent --location \
-            https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
-            | sudo sh -s -- -b /usr/local/bin v0.68.2
-
       - name: Scan image with Trivy
         run: |
-          trivy image \
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$HOME/.cache/trivy:/root/.cache/" \
+            aquasec/trivy:0.68.2 image \
             --format table \
             --exit-code 1 \
             --ignore-unfixed \
-            --vuln-type os,library \
+            --pkg-types os,library \
+            --scanners vuln \
             --severity CRITICAL,HIGH \
             ${{ env.IMAGE_NAME }}:scan-${{ github.sha }}
 

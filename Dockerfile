@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM golang:1.22.5-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /src
 
@@ -12,16 +12,14 @@ COPY static ./static
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/go-webapp .
 
-FROM alpine:3.21
+FROM scratch
 
 WORKDIR /app
-
-RUN addgroup -S app && adduser -S -G app app
 
 COPY --from=builder /out/go-webapp ./go-webapp
 COPY --from=builder /src/static ./static
 
-USER app
+USER 65532:65532
 
 EXPOSE 8080
 
