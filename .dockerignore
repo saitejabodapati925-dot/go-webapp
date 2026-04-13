@@ -10,4 +10,5 @@ main_test.go
 *.test
 .gocache
 go-web-app
+go-webapp
 coverage.out

@@ -24,4 +24,5 @@ go.work.sum
 # Local development artifacts
 .gocache/
 go-web-app
+go-webapp
 coverage.out
