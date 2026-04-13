@@ -7,9 +7,10 @@ WORKDIR /src
 COPY go.mod ./
 RUN go mod download
 
-COPY . .
+COPY main.go ./
+COPY static ./static
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/go-web-app .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/go-webapp .
 
 FROM alpine:3.21
 
@@ -17,11 +18,11 @@ WORKDIR /app
 
 RUN addgroup -S app && adduser -S -G app app
 
-COPY --from=builder /out/go-web-app ./go-web-app
+COPY --from=builder /out/go-webapp ./go-webapp
 COPY --from=builder /src/static ./static
 
 USER app
 
 EXPOSE 8080
 
-ENTRYPOINT ["./go-web-app"]
+ENTRYPOINT ["./go-webapp"]
