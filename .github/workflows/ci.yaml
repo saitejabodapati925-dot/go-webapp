@@ -125,6 +125,7 @@ jobs:
         uses: aquasecurity/trivy-action@v0.33.1
         with:
           image-ref: ${{ env.IMAGE_NAME }}:scan-${{ github.sha }}
+          version: v0.68.2
           format: table
           exit-code: "1"
           ignore-unfixed: true
