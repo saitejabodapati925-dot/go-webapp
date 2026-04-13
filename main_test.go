@@ -28,6 +28,51 @@ func TestHomeRoute(t *testing.T) {
 	}
 }
 
+func TestCourseRoute(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/courses", nil)
+	rr := httptest.NewRecorder()
+
+	newMux().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, rr.Code)
+	}
+
+	if contentType := rr.Header().Get("Content-Type"); contentType != "text/html; charset=utf-8" {
+		t.Fatalf("expected html content type, got %q", contentType)
+	}
+}
+
+func TestAboutRoute(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/about", nil)
+	rr := httptest.NewRecorder()
+
+	newMux().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, rr.Code)
+	}
+
+	if contentType := rr.Header().Get("Content-Type"); contentType != "text/html; charset=utf-8" {
+		t.Fatalf("expected html content type, got %q", contentType)
+	}
+}
+
+func TestContactRoute(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/contact", nil)
+	rr := httptest.NewRecorder()
+
+	newMux().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, rr.Code)
+	}
+
+	if contentType := rr.Header().Get("Content-Type"); contentType != "text/html; charset=utf-8" {
+		t.Fatalf("expected html content type, got %q", contentType)
+	}
+}
+
 func TestRootRedirect(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rr := httptest.NewRecorder()
@@ -55,5 +100,16 @@ func TestStaticAssetRoute(t *testing.T) {
 
 	if contentType := rr.Header().Get("Content-Type"); !strings.HasPrefix(contentType, "text/css") {
 		t.Fatalf("expected css content type, got %q", contentType)
+	}
+}
+
+func TestUnknownRouteReturnsNotFound(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/missing", nil)
+	rr := httptest.NewRecorder()
+
+	newMux().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNotFound {
+		t.Fatalf("expected status %d, got %d", http.StatusNotFound, rr.Code)
 	}
 }
