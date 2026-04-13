@@ -12,6 +12,7 @@ permissions:
 
 env:
   IMAGE_NAME: docker.io/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   validate:
@@ -26,7 +27,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-          cache: true
+          cache: false
 
       - name: Verify formatting
         run: |
@@ -61,7 +62,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-          cache: true
+          cache: false
 
       - name: Generate coverage report
         run: go test ./... -coverprofile=coverage.out
@@ -73,6 +74,7 @@ jobs:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
         with:
           args: >
+            -Dsonar.organization=saitejabodapati925-dot
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
             -Dsonar.projectName=${{ github.event.repository.name }}
 
