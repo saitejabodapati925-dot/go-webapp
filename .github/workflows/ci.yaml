@@ -2,9 +2,15 @@ name: CI
 
 on:
   pull_request:
+    paths-ignore:
+      - k8s/**
+      - argocd/**
   push:
     branches:
       - main
+    paths-ignore:
+      - k8s/**
+      - argocd/**
   workflow_dispatch:
 
 permissions:
