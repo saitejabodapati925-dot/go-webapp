@@ -1,0 +1,79 @@
+name: Provision EKS Infra
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: AWS region for the EKS cluster
+        required: true
+        default: us-east-1
+        type: string
+      cluster_name:
+        description: EKS cluster name
+        required: true
+        default: go-webapp
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: provision-eks-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TF_WORKING_DIR: infra/terraform/eks
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+  TF_VAR_aws_region: ${{ inputs.aws_region }}
+  TF_VAR_cluster_name: ${{ inputs.cluster_name }}
+
+jobs:
+  provision:
+    name: Terraform Apply EKS
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ inputs.aws_region }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: github-actions-provision-eks
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve tfplan
+
+      - name: Terraform outputs
+        run: terraform output -no-color
+
+      - name: Write workflow summary
+        run: |
+          echo "## EKS Provisioned" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Region: \`${TF_VAR_aws_region}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Cluster name: \`${TF_VAR_cluster_name}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Terraform Outputs" >> "$GITHUB_STEP_SUMMARY"
+          terraform output -no-color >> "$GITHUB_STEP_SUMMARY"
