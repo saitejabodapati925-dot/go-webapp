@@ -15,6 +15,7 @@ kubectl patch service argocd-server -n "${ARGOCD_NAMESPACE}" --type merge \
   -p '{"spec":{"type":"LoadBalancer"}}'
 
 # Keep the demo cluster small enough for Free Tier-sized nodes.
+kubectl scale deployment/coredns -n kube-system --replicas=1
 kubectl scale deployment/argocd-dex-server -n "${ARGOCD_NAMESPACE}" --replicas=0
 kubectl scale deployment/argocd-notifications-controller -n "${ARGOCD_NAMESPACE}" --replicas=0
 kubectl scale deployment/argocd-applicationset-controller -n "${ARGOCD_NAMESPACE}" --replicas=0
@@ -25,11 +26,26 @@ if [[ -n "${ARGOCD_WEBHOOK_SECRET}" ]]; then
     -p "{\"data\":{\"webhook.github.secret\":\"${encoded_secret}\"}}"
 fi
 
-if ! kubectl rollout status deployment/argocd-server -n "${ARGOCD_NAMESPACE}" --timeout=900s; then
+kubectl rollout restart deployment/argocd-redis -n "${ARGOCD_NAMESPACE}"
+kubectl rollout restart deployment/argocd-repo-server -n "${ARGOCD_NAMESPACE}"
+kubectl rollout restart deployment/argocd-server -n "${ARGOCD_NAMESPACE}"
+kubectl rollout restart statefulset/argocd-application-controller -n "${ARGOCD_NAMESPACE}"
+
+for workload in \
+  deployment/argocd-redis \
+  deployment/argocd-repo-server \
+  deployment/argocd-server \
+  statefulset/argocd-application-controller; do
+  if kubectl rollout status "${workload}" -n "${ARGOCD_NAMESPACE}" --timeout=900s; then
+    continue
+  fi
+
+  kubectl get nodes -o wide
   kubectl get pods -n "${ARGOCD_NAMESPACE}" -o wide
-  kubectl describe deployment/argocd-server -n "${ARGOCD_NAMESPACE}"
+  kubectl get events -n "${ARGOCD_NAMESPACE}" --sort-by=.lastTimestamp
+  kubectl describe "${workload}" -n "${ARGOCD_NAMESPACE}"
   exit 1
-fi
+done
 
 kubectl apply -f argocd/go-webapp-project.yaml
 kubectl apply -f argocd/go-webapp-application.yaml

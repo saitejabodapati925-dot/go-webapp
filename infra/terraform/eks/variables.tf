@@ -37,19 +37,19 @@ variable "node_instance_types" {
 variable "node_desired_size" {
   description = "Desired node count for the managed node group."
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "node_min_size" {
   description = "Minimum node count for the managed node group."
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "node_max_size" {
   description = "Maximum node count for the managed node group."
   type        = number
-  default     = 3
+  default     = 4
 }
 
 variable "tags" {
