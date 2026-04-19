@@ -11,6 +11,8 @@ kubectl apply -n "${ARGOCD_NAMESPACE}" --server-side --force-conflicts -f "${ARG
 kubectl wait --for=condition=Established crd/applications.argoproj.io --timeout=180s
 kubectl wait --for=condition=Established crd/appprojects.argoproj.io --timeout=180s
 
+kubectl delete daemonset/eks-pod-identity-agent -n kube-system --ignore-not-found=true
+
 kubectl patch service argocd-server -n "${ARGOCD_NAMESPACE}" --type merge \
   -p '{"spec":{"type":"LoadBalancer"}}'
 

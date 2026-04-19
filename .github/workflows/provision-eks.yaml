@@ -115,6 +115,25 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve tfplan
 
+      - name: Scale EKS node group
+        run: |
+          nodegroup_name="$(aws eks list-nodegroups \
+            --region "${TF_VAR_aws_region}" \
+            --cluster-name "${TF_VAR_cluster_name}" \
+            --query 'nodegroups[0]' \
+            --output text)"
+
+          aws eks update-nodegroup-config \
+            --region "${TF_VAR_aws_region}" \
+            --cluster-name "${TF_VAR_cluster_name}" \
+            --nodegroup-name "${nodegroup_name}" \
+            --scaling-config minSize=2,maxSize=4,desiredSize=4
+
+          aws eks wait nodegroup-active \
+            --region "${TF_VAR_aws_region}" \
+            --cluster-name "${TF_VAR_cluster_name}" \
+            --nodegroup-name "${nodegroup_name}"
+
       - name: Configure kubeconfig
         run: aws eks update-kubeconfig --region "${TF_VAR_aws_region}" --name "${TF_VAR_cluster_name}"
 
