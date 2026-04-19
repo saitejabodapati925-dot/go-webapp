@@ -1,0 +1,123 @@
+name: Destroy EKS and Argo CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: AWS region where the EKS cluster exists
+        required: true
+        default: us-east-1
+        type: string
+      cluster_name:
+        description: EKS cluster name to destroy
+        required: true
+        default: go-webapp
+        type: string
+      confirm_destroy:
+        description: Type destroy-go-webapp to confirm deletion
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: destroy-eks-${{ inputs.cluster_name }}
+  cancel-in-progress: false
+
+env:
+  TF_WORKING_DIR: infra/terraform/eks
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+  TF_VAR_aws_region: ${{ inputs.aws_region }}
+  TF_VAR_cluster_name: ${{ inputs.cluster_name }}
+
+jobs:
+  destroy:
+    name: Terraform Destroy EKS
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Confirm destructive action
+        run: |
+          if [[ "${CONFIRM_DESTROY}" != "destroy-go-webapp" ]]; then
+            echo "Confirmation did not match. Type destroy-go-webapp to destroy the EKS resources." >&2
+            exit 1
+          fi
+        env:
+          CONFIRM_DESTROY: ${{ inputs.confirm_destroy }}
+
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: ${{ inputs.aws_region }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_wrapper: false
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
+        with:
+          version: v1.35.4
+
+      - name: Locate Terraform state bucket
+        id: state
+        run: |
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          bucket="go-webapp-tfstate-${account_id}-${TF_VAR_aws_region}"
+
+          if ! aws s3api head-bucket --bucket "${bucket}" 2>/dev/null; then
+            echo "Terraform state bucket ${bucket} was not found." >&2
+            exit 1
+          fi
+
+          echo "bucket=${bucket}" >> "$GITHUB_OUTPUT"
+
+      - name: Best-effort Kubernetes cleanup
+        run: |
+          if ! aws eks describe-cluster --region "${TF_VAR_aws_region}" --name "${TF_VAR_cluster_name}" >/dev/null 2>&1; then
+            echo "Cluster is not reachable, skipping Kubernetes cleanup."
+            exit 0
+          fi
+
+          aws eks update-kubeconfig --region "${TF_VAR_aws_region}" --name "${TF_VAR_cluster_name}"
+
+          kubectl delete application go-webapp -n argocd --ignore-not-found=true --timeout=180s || true
+          kubectl delete service argocd-server -n argocd --ignore-not-found=true --timeout=180s || true
+          kubectl delete namespace go-webapp --ignore-not-found=true --timeout=180s || true
+          kubectl delete namespace argocd --ignore-not-found=true --timeout=180s || true
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ steps.state.outputs.bucket }}" \
+            -backend-config="key=eks/${TF_VAR_cluster_name}/terraform.tfstate" \
+            -backend-config="region=${TF_VAR_aws_region}" \
+            -backend-config="encrypt=true"
+
+      - name: Terraform destroy plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -destroy -out=destroy.tfplan
+
+      - name: Terraform destroy
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve destroy.tfplan
+
+      - name: Write workflow summary
+        run: |
+          echo "## EKS Destroy Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Region: \`${TF_VAR_aws_region}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Cluster name: \`${TF_VAR_cluster_name}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Terraform state bucket is intentionally kept for audit/history." >> "$GITHUB_STEP_SUMMARY"
