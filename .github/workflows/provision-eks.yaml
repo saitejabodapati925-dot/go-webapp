@@ -76,15 +76,15 @@ jobs:
         id: state
         run: |
           account_id="$(aws sts get-caller-identity --query Account --output text)"
-          bucket="go-webapp-tfstate-${account_id}-${{ inputs.aws_region }}"
+          bucket="go-webapp-tfstate-${account_id}-${TF_VAR_aws_region}"
 
           if ! aws s3api head-bucket --bucket "${bucket}" 2>/dev/null; then
-            if [ "${{ inputs.aws_region }}" = "us-east-1" ]; then
+            if [[ "${TF_VAR_aws_region}" = "us-east-1" ]]; then
               aws s3api create-bucket --bucket "${bucket}"
             else
               aws s3api create-bucket \
                 --bucket "${bucket}" \
-                --create-bucket-configuration LocationConstraint=${{ inputs.aws_region }}
+                --create-bucket-configuration LocationConstraint="${TF_VAR_aws_region}"
             fi
           fi
 
@@ -99,8 +99,8 @@ jobs:
         run: |
           terraform init \
             -backend-config="bucket=${{ steps.state.outputs.bucket }}" \
-            -backend-config="key=eks/${{ inputs.cluster_name }}/terraform.tfstate" \
-            -backend-config="region=${{ inputs.aws_region }}" \
+            -backend-config="key=eks/${TF_VAR_cluster_name}/terraform.tfstate" \
+            -backend-config="region=${TF_VAR_aws_region}" \
             -backend-config="encrypt=true"
 
       - name: Terraform validate
@@ -116,7 +116,7 @@ jobs:
         run: terraform apply -auto-approve tfplan
 
       - name: Configure kubeconfig
-        run: aws eks update-kubeconfig --region "${{ inputs.aws_region }}" --name "${{ inputs.cluster_name }}"
+        run: aws eks update-kubeconfig --region "${TF_VAR_aws_region}" --name "${TF_VAR_cluster_name}"
 
       - name: Install Argo CD
         env:
