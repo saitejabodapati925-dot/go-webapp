@@ -26,13 +26,3 @@ go.work.sum
 go-web-app
 go-webapp
 coverage.out
-
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-crash.log
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
