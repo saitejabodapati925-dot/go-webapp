@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-webapp
+  labels:
+    app.kubernetes.io/name: go-webapp
+    app.kubernetes.io/part-of: stackpilot-academy
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: go-webapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

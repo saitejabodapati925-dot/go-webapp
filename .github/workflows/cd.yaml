@@ -1,0 +1,87 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Optional image tag to deploy instead of the current commit SHA tag
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: go-webapp-cd-main
+  cancel-in-progress: true
+
+env:
+  MANIFEST_PATH: k8s/overlays/prod/kustomization.yaml
+  IMAGE_NAME: docker.io/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+
+jobs:
+  update-gitops-manifest:
+    name: Update Argo CD target manifest
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          ref: main
+
+      - name: Check deployment freshness
+        id: freshness
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "$(git rev-parse HEAD)" != "${{ github.event.workflow_run.head_sha }}" ]; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping stale CI result for ${{ github.event.workflow_run.head_sha }} because main is already at $(git rev-parse HEAD)."
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve deploy image tag
+        id: image
+        if: steps.freshness.outputs.deploy == 'true'
+        run: |
+          echo "name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.image_tag }}" ]; then
+            echo "tag=${{ inputs.image_tag }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=sha-${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update production image tag
+        if: steps.freshness.outputs.deploy == 'true'
+        run: |
+          sed -i "s#^    newName: .*#    newName: ${{ steps.image.outputs.name }}#" "${MANIFEST_PATH}"
+          sed -i "s/^    newTag: .*/    newTag: ${{ steps.image.outputs.tag }}/" "${MANIFEST_PATH}"
+          grep -n "newName:\\|newTag:" "${MANIFEST_PATH}"
+
+      - name: Commit manifest update
+        if: steps.freshness.outputs.deploy == 'true'
+        run: |
+          if git diff --quiet -- "${MANIFEST_PATH}"; then
+            echo "Manifest already points at ${MANIFEST_PATH} tag ${{ steps.image.outputs.tag }}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${MANIFEST_PATH}"
+          git commit -m "Deploy go-webapp ${{ steps.image.outputs.tag }}"
+          git push origin HEAD:main

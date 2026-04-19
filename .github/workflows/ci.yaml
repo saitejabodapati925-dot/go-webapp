@@ -2,9 +2,15 @@ name: CI
 
 on:
   pull_request:
+    paths-ignore:
+      - k8s/**
+      - argocd/**
   push:
     branches:
       - main
+    paths-ignore:
+      - k8s/**
+      - argocd/**
   workflow_dispatch:
 
 permissions:
@@ -107,7 +113,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=sha,prefix=sha-
+            type=sha,prefix=sha-,format=long
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build local image for Trivy scan

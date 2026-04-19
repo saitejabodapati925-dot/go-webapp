@@ -1,0 +1,147 @@
+name: Provision EKS and Argo CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: AWS region for the EKS cluster
+        required: true
+        default: us-east-1
+        type: string
+      cluster_name:
+        description: EKS cluster name
+        required: true
+        default: go-webapp
+        type: string
+      create_github_webhook:
+        description: Create GitHub webhook if GH_WEBHOOK_TOKEN and ARGOCD_WEBHOOK_SECRET secrets exist
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: provision-eks-${{ inputs.cluster_name }}
+  cancel-in-progress: false
+
+env:
+  TF_WORKING_DIR: infra/terraform/eks
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+  TF_VAR_aws_region: ${{ inputs.aws_region }}
+  TF_VAR_cluster_name: ${{ inputs.cluster_name }}
+  TF_VAR_repository_url: https://github.com/${{ github.repository }}.git
+
+jobs:
+  provision:
+    name: Terraform Apply and Bootstrap Argo CD
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - name: Check AWS secrets
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -z "${AWS_ACCESS_KEY_ID}" ] || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+            echo "Missing AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY repository secret." >&2
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: ${{ inputs.aws_region }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_wrapper: false
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
+        with:
+          version: v1.35.4
+
+      - name: Bootstrap Terraform state bucket
+        id: state
+        run: |
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          bucket="go-webapp-tfstate-${account_id}-${{ inputs.aws_region }}"
+
+          if ! aws s3api head-bucket --bucket "${bucket}" 2>/dev/null; then
+            if [ "${{ inputs.aws_region }}" = "us-east-1" ]; then
+              aws s3api create-bucket --bucket "${bucket}"
+            else
+              aws s3api create-bucket \
+                --bucket "${bucket}" \
+                --create-bucket-configuration LocationConstraint=${{ inputs.aws_region }}
+            fi
+          fi
+
+          aws s3api put-bucket-versioning \
+            --bucket "${bucket}" \
+            --versioning-configuration Status=Enabled
+
+          echo "bucket=${bucket}" >> "$GITHUB_OUTPUT"
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ steps.state.outputs.bucket }}" \
+            -backend-config="key=eks/${{ inputs.cluster_name }}/terraform.tfstate" \
+            -backend-config="region=${{ inputs.aws_region }}" \
+            -backend-config="encrypt=true"
+
+      - name: Terraform validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve tfplan
+
+      - name: Configure kubeconfig
+        run: aws eks update-kubeconfig --region "${{ inputs.aws_region }}" --name "${{ inputs.cluster_name }}"
+
+      - name: Install Argo CD
+        env:
+          ARGOCD_WEBHOOK_SECRET: ${{ secrets.ARGOCD_WEBHOOK_SECRET }}
+        run: ./scripts/install-argocd.sh
+
+      - name: Create GitHub webhook for Argo CD
+        if: ${{ inputs.create_github_webhook }}
+        env:
+          GH_WEBHOOK_TOKEN: ${{ secrets.GH_WEBHOOK_TOKEN }}
+          ARGOCD_WEBHOOK_SECRET: ${{ secrets.ARGOCD_WEBHOOK_SECRET }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: ./scripts/create-argocd-github-webhook.sh
+
+      - name: Terraform outputs
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform output -no-color
+
+      - name: Write workflow summary
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          echo "## EKS and Argo CD Provisioned" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Region: \`${TF_VAR_aws_region}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Cluster name: \`${TF_VAR_cluster_name}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Terraform Outputs" >> "$GITHUB_STEP_SUMMARY"
+          terraform output -no-color >> "$GITHUB_STEP_SUMMARY"

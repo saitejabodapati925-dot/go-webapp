@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: go-webapp
+  namespace: argocd
+spec:
+  description: GitOps project for the go-webapp deployment
+  sourceRepos:
+    - https://github.com/saitejabodapati925-dot/go-webapp.git
+  destinations:
+    - namespace: go-webapp
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: apps
+      kind: Deployment
+    - group: ""
+      kind: Service
