@@ -47,6 +47,13 @@ module "eks" {
   kubernetes_version = var.kubernetes_version
 
   endpoint_public_access = true
+  enabled_log_types      = []
+
+  create_cloudwatch_log_group = false
+
+  encryption_config        = null
+  create_kms_key           = false
+  attach_encryption_policy = false
 
   enable_cluster_creator_admin_permissions = true
 
